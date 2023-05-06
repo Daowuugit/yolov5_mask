@@ -1,6 +1,6 @@
 # YOLOv5 🚀 by Ultralytics, GPL-3.0 license
 """
-user by xigua西瓜
+user by xujinlong
 """
 
 import argparse

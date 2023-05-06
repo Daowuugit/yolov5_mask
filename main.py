@@ -27,7 +27,7 @@ def puttext_chinese(img, text, point, color):
     return img
 
 
-class Main_window(QLabel):
+class Main_window(QLabel):  # 用于实时检测
     def __init__(self):
         super().__init__()
         self.run_flag = False  # 运行标志位
@@ -84,7 +84,54 @@ class Main_window(QLabel):
         return frame
 
 
+class Img_window(QLabel):  # 用于实时检测
+    def __init__(self):
+        super().__init__()
+        self.cap = cv2
+        self.ui = uic.loadUi('designer.ui')  # 动态加载ui界面
+        self.model = torch.hub.load('./', 'custom', path='runs/train/exp5/weights/best.pt', source='local')
+        self.ui.window.setPixmap(QPixmap("pictures/logo.png"))  # 待机页面
+        self.ui.setWindowIcon(QIcon('pictures/logo.ico'))  # ico图标
+        self.ui.window.setScaledContents(True)  # 图片自适应大小
+        self.ui.start.setText("开始检测")
+        self.ui.start.clicked.connect(self.start_stop)  # 连接按键与事件
+        self.ui.shut_down.clicked.connect(self.shut_down)
+        self.ui.show()  # 启动显示
+
+    def start_stop(self):  # 启动和停止按键
+        shows = self.cap.imread(sys.argv[1])
+        shows = self.detection(shows)
+        shows = QtGui.QImage(shows.data, shows.shape[1], shows.shape[0], QtGui.QImage.Format_RGB888)
+        self.ui.window.setPixmap(QtGui.QPixmap.fromImage(shows))
+        self.ui.start.setText("检测完毕")
+
+    def shut_down(self):  # 关闭系统按键
+        log.info("system down.")
+        self.ui.close()
+
+    def detection(self, frame):
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = self.model(frame)
+        # print(results.pandas().xyxy[0].to_numpy())# tensor-to-numpy
+        results_ = results.pandas().xyxy[0].to_numpy()
+        for box in results_:
+            log.info(box)
+            l, t, r, b = box[:4].astype('int')
+            confidence = str(round(box[4] * 100, 2)) + "%"
+            cls_name = box[6]
+            # label_predict = box[5]
+            cv2.rectangle(frame, (l, t), (r, b), colors[box[5]], 2)
+
+            frame = puttext_chinese(frame, id2chiclass[box[5]], (l, t), colors[box[5]])  # 打印中文
+
+            # cv2.putText(frame, cls_name + "-" + confidence, (l, t), cv2.FONT_ITALIC, 1, (255, 0, 0), 2)
+        return frame
+
+
 if __name__ == "__main__":
     app = QApplication([])
-    windows = Main_window()
+    if len(sys.argv) == 1:
+        windows = Main_window()
+    else:
+        windows = Img_window()
     sys.exit(app.exec_())
