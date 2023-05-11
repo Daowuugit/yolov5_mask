@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QApplication
 import torch
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-from logger import log
+from utils.logger import log
 
 id2chiclass = {1: '佩戴了口罩', 0: '未佩戴口罩'}
 colors = ((255, 0, 0), (0, 255, 0))

@@ -1091,16 +1091,9 @@ def increment_path(path, exist_ok=False, sep='', mkdir=False):
         # Method 1
         for n in range(2, 9999):
             p = f'{path}{sep}{n}{suffix}'  # increment path
-            if not os.path.exists(p):  #
+            if not os.path.exists(p):
                 break
         path = Path(p)
-
-        # Method 2 (deprecated)
-        # dirs = glob.glob(f"{path}{sep}*")  # similar paths
-        # matches = [re.search(rf"{path.stem}{sep}(\d+)", d) for d in dirs]
-        # i = [int(m.groups()[0]) for m in matches if m]  # indices
-        # n = max(i) + 1 if i else 2  # increment number
-        # path = Path(f"{path}{sep}{n}{suffix}")  # increment path
 
     if mkdir:
         path.mkdir(parents=True, exist_ok=True)  # make directory

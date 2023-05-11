@@ -1,17 +1,14 @@
 # YOLOv5 🚀 by Ultralytics, GPL-3.0 license
-
-
 import argparse
 import os
 import platform
 import sys
 from pathlib import Path
-
 import torch
 
-FILE = Path(__file__).resolve()
-ROOT = FILE.parents[0]  # YOLOv5 root directory
-if str(ROOT) not in sys.path:
+FILE = Path(__file__).resolve()   # /.../home/apple/CV_studay/detect.py
+ROOT = FILE.parents[0]  # /.../home/apple/CV_studay
+if str(ROOT) not in sys.path:  # 模块查询列表
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
@@ -25,10 +22,10 @@ from utils.torch_utils import select_device, smart_inference_mode
 
 @smart_inference_mode()
 def run(
-        weights=ROOT / 'yolov5s.pt',  # model path or triton URL
-        source=ROOT / 'data/images',  # file/dir/URL/glob/screen/0(webcam)
-        data=ROOT / 'data/coco128.yaml',  # dataset.yaml path
-        imgsz=(640, 640),  # inference size (height, width)
+        weights=ROOT / 'yolov5s.pt',  # 模型路径
+        source=ROOT / 'data/images',  # 图片目录
+        data=ROOT / 'data/coco128.yaml',  # 配置文件路径
+        imgsz=(640, 640),  # 图片尺寸信息
         conf_thres=0.25,  # confidence threshold
         iou_thres=0.45,  # NMS IOU threshold
         max_det=1000,  # maximum detections per image
@@ -62,7 +59,7 @@ def run(
     if is_url and is_file:
         source = check_file(source)  # download
 
-    # Directories
+    # 保存结果路径
     save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
 
